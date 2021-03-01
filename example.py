@@ -6,7 +6,7 @@ from functools import partial
 
 import logging; logging.basicConfig(filename='example.log', level=logging.INFO)
 
-os.system("""git clone https://github.com/UniversalDependencies/UD_Danish-DDT.git data""")
+#os.system("""git clone https://github.com/UniversalDependencies/UD_Danish-DDT.git data""")
 corpus = Corpus("data/da_ddt-ud-train.conllu")#, range(0,100))
 subcorpora = corpus.create_subcorpora(3, random_seed=42)
 
@@ -31,7 +31,11 @@ change_rates = [0, 0.5, 1]
 
 for i, (subcorpus, change_rate) in enumerate(zip(subcorpora, change_rates)):
     transform = partial(apply_sound_change, rb=sound_changes, p=change_rate)
+    print("Running parallel")
     subcorpus.write_to_file("da_ddt-ud-train_{}.conll".format(i+1), 
+                            transform=transform)
+    print("Running serial")
+    subcorpus.write_to_file_serial("da_ddt-ud-train_{}.conll".format(i+1), 
                             transform=transform)
 
 

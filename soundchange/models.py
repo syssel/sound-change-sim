@@ -33,7 +33,7 @@ class RuleBook(object):
     def __init__(self, rules, exceptions):
         self.rules = rules
         self.exceptions = exceptions
-    
+    @profile
     def transform(self, word, base_prob):
         # Check if word is an exception, and update change probability
         word = word.lower()
@@ -83,6 +83,7 @@ class Corpus(object):
         return [Corpus(self.dpath, indices)
                 for n, indices in enumerate(sub_indices)]
     
+    @profile
     def append_tokens_to_file(self, tokenlist, dest, transform=None):
         if transform:
             tokenlist = transform(tokenlist)
@@ -90,6 +91,7 @@ class Corpus(object):
         with open(dest, "a") as f:
             f.write(tokenlist.conll()+"\n\n")
 
+    @profile
     def write_to_file(self, dest, transform=None):
         open(dest, 'w').close()
         pool = Pool(os.cpu_count()+2)
@@ -101,6 +103,16 @@ class Corpus(object):
                         partial(self.append_tokens_to_file, dest=dest, transform=transform),
                         sentences):
             continue                            
+
+    @profile
+    def write_to_file_serial(self, dest, transform=None):
+        open(dest, 'w').close()
+
+        sentences = (tokens for i, tokens in enumerate(iter_from_file(self.dpath))
+                            if i in self.indices)
+
+        for tokens in sentences:
+            self.append_tokens_to_file(tokens, dest, transform)
 
     def __len__(self):
         return len(self.indices)
