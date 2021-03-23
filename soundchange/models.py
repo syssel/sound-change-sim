@@ -3,11 +3,12 @@ import re
 import random
 import numpy as np
 
+import logging
+
 from multiprocessing import Pool
 from functools import partial
 
 from pyconll import iter_from_file
-from pyconll.unit.conll import Conll
 
 class RuleException(object):
     def __init__(self, source, p):
@@ -57,7 +58,6 @@ class RuleBook(object):
                 if sub == pre_sub: break
                 pre_sub = sub
 
-            import logging
             if word != sub: logging.info("|".join((word, sub, str(base_prob), str(prob))))
             
             # Realise change with probability <prob>, or leave word unchanged <1-prob>
@@ -96,6 +96,12 @@ class Corpus(object):
 
         sentences = (tokens for i, tokens in enumerate(iter_from_file(self.dpath))
                             if i in self.indices)
+
+        logging.info("="*84)
+        logging.info("File:{}".format(self.dpath))
+        logging.info("Indices:{}".format(self.indices))
+        logging.info("="*84)
+        
 
         for tokens in pool.imap_unordered(
                         partial(self.append_tokens_to_file, dest=dest, transform=transform),
