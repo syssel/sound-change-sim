@@ -58,12 +58,13 @@ class RuleBook(object):
                 if sub == pre_sub: break
                 pre_sub = sub
 
-            if word != sub: logging.info("|".join((word, sub, str(base_prob), str(prob))))
             
             # Realise change with probability <prob>, or leave word unchanged <1-prob>
-            word = np.random.choice([sub, word], p=(prob, 1-prob))
+            transformed = np.random.choice([sub, word], p=(prob, 1-prob))
+            if word != sub: logging.info("|".join((word, sub, str(base_prob), str(prob), str(transformed!=word), transformed)))
+            word = transformed
 
-        return word
+        return transformed
 
 
 class Corpus(object):
