@@ -93,21 +93,21 @@ class Corpus(object):
 
     def write_to_file(self, dest, transform=None):
         open(dest, 'w').close()
-        pool = Pool(os.cpu_count()+2)
+        with Pool(os.cpu_count()+2) as pool:
 
-        sentences = (tokens for i, tokens in enumerate(iter_from_file(self.dpath))
-                            if i in self.indices)
+            sentences = (tokens for i, tokens in enumerate(iter_from_file(self.dpath))
+                                if i in self.indices)
 
-        logging.info("="*84)
-        logging.info("File:{}".format(self.dpath))
-        logging.info("Indices:{}".format(self.indices))
-        logging.info("="*84)
-        
+            logging.info("="*84)
+            logging.info("File:{}".format(self.dpath))
+            logging.info("Indices:{}".format(self.indices))
+            logging.info("="*84)
+            
 
-        for tokens in pool.imap_unordered(
-                        partial(self.append_tokens_to_file, dest=dest, transform=transform),
-                        sentences):
-            continue                            
+            for tokens in pool.imap_unordered(
+                            partial(self.append_tokens_to_file, dest=dest, transform=transform),
+                            sentences):
+                continue                            
 
     def __len__(self):
         return len(self.indices)
