@@ -19,6 +19,8 @@ class RuleException(object):
     def from_string(s):
         raise ValueError("Not implemented")
 
+    def __str__(self):
+        return "(source:{} p:{})".format(self.source, self.p)
 
 class Rule(object):
     def __init__(self, source, target):
@@ -28,6 +30,9 @@ class Rule(object):
     @classmethod
     def from_string(s):
         raise ValueError("Not implemented")
+    
+    def __str__(self):
+        return "(source:{} target:{})".format(self.source, self.target)
 
 
 class RuleBook(object):
