@@ -89,14 +89,14 @@ class Corpus(object):
         return [Corpus(self.dpath, indices)
                 for n, indices in enumerate(sub_indices)]
     
-    def append_tokens_to_file(self, tokenlist, dest, transform=None):
+    def append_tokens_to_file(self, tokenlist, dest, writer, transform=None):
         if transform:
             tokenlist = transform(tokenlist)
 
         with open(dest, "a") as f:
-            f.write(tokenlist.conll()+"\n\n")
+            f.write(writer(tokenlist))
 
-    def write_to_file(self, dest, transform=None):
+    def write_to_file(self, dest, writer, transform=None):
         open(dest, 'w').close()
         with Pool(os.cpu_count()+2) as pool:
 
@@ -110,7 +110,7 @@ class Corpus(object):
             
 
             for tokens in pool.imap_unordered(
-                            partial(self.append_tokens_to_file, dest=dest, transform=transform),
+                            partial(self.append_tokens_to_file, dest=dest, writer=writer, transform=transform),
                             sentences):
                 continue                            
 
